@@ -25,7 +25,7 @@ class App {
   // Route initialization
   initializeRoutes() {
     this.app.use('/api/match', matchRoutes);
-    this.app.use('/api/ball', BallRoutes);
+    this.app.use('/api/balls', BallRoutes);
   }
 
   // Database connection

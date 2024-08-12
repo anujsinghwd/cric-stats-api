@@ -141,15 +141,13 @@ class BallController {
   async updatedBall(req, res) {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
-      const { matchId, ballId } = req.params;
+      const { ballId } = req.params;
       const { runs, striker, nonStriker, bowler, noBall, wideBall, over_str } =
         req.body;
 
       // Find the ball by ID
       const ball = await Ball.findById(ballId).session(session);
-
       if (!ball) {
         await session.abortTransaction();
         session.endSession();
@@ -157,7 +155,7 @@ class BallController {
       }
 
       // Find the match by ID
-      const match = await Match.findById(matchId).session(session);
+      const match = await Match.findById(ball.matchId).session(session);
 
       if (!match) {
         await session.abortTransaction();
