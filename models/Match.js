@@ -32,16 +32,13 @@ const MatchSchema = new Schema({
   },
   striker: {
     type: String,
-    required: true,
   },
   nonStriker: {
     type: String,
-    required: true,
   },
   bowler: {
     key: {
       type: String,
-      required: true,
     },
   },
   over_str: {

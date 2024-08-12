@@ -20,17 +20,22 @@ class BallController {
         over_str,
       } = req.body;
 
-      // Create and save the ball data
-      const ball = new Ball({
+      const newBall = {
         matchId,
         runs,
         striker,
         nonStriker,
         bowler: { key: bowler },
         noBall,
-        wideBall,
         over_str,
-      });
+      };
+
+      if (wideBall === 0 || wideBall) {
+        newBall.wideBall = wideBall;
+      }
+
+      // Create and save the ball data
+      const ball = new Ball(newBall);
 
       const savedBall = await ball.save({ session });
 
@@ -59,16 +64,17 @@ class BallController {
       if (!strikerStats) {
         strikerStats = {
           batsman: striker,
-          runs: 0,
-          ballsFaced: 0,
-          strikeRate: 0,
+          runs: runs,
+          ballsFaced: 1,
+          strikeRate: runs * 100,
         };
         match.batsmanStats.push(strikerStats);
+      } else {
+        strikerStats.runs += runs;
+        strikerStats.ballsFaced += 1;
+        strikerStats.strikeRate =
+          (strikerStats.runs / strikerStats.ballsFaced) * 100;
       }
-      strikerStats.runs += runs;
-      strikerStats.ballsFaced += 1;
-      strikerStats.strikeRate =
-        (strikerStats.runs / strikerStats.ballsFaced) * 100;
 
       // Update non-striker statistics (if applicable)
       if (!noBall && !wideBall) {
@@ -84,9 +90,6 @@ class BallController {
           };
           match.batsmanStats.push(nonStrikerStats);
         }
-        nonStrikerStats.ballsFaced += 1;
-        nonStrikerStats.strikeRate =
-          (nonStrikerStats.runs / nonStrikerStats.ballsFaced) * 100;
       }
 
       // Update bowler statistics
@@ -94,26 +97,27 @@ class BallController {
       if (!bowlerStats) {
         bowlerStats = {
           bowler: bowler,
-          runsConceded: 0,
-          deliveries: 0,
-          noBallsConceded: 0,
-          economyRate: 0,
+          runsConceded: runs,
+          deliveries: 1,
+          noBallsConceded: noBall || 0,
+          economyRate: (runs/(1/6)).toFixed(2),
         };
         match.bowlerStats.push(bowlerStats);
+      } else {
+        bowlerStats.runsConceded += runs;
+        bowlerStats.deliveries += 1;
+        bowlerStats.noBallsConceded += noBall || 0;
+        bowlerStats.economyRate = (
+          bowlerStats.runsConceded /
+          (bowlerStats.deliveries / 6)
+        ).toFixed(2);
       }
-      bowlerStats.runsConceded += runs;
-      bowlerStats.deliveries += 1;
-      bowlerStats.noBallsConceded += noBall || 0;
-      bowlerStats.economyRate = (
-        bowlerStats.runsConceded /
-        (bowlerStats.deliveries / 6)
-      ).toFixed(2);
 
       // Update match CRR and other details
       match.crr = calculateCRR(match);
       match.over_str = over_str;
       match.updated_at = Date.now();
-
+      match.totalBallsPlayed += (!noBall && !wideBall) ? 1 : 0;
       // Save the updated match document
       await match.save({ session });
 

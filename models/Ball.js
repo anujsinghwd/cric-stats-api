@@ -10,6 +10,7 @@ const BallSchema = new Schema({
   runs: {
     type: Number,
     default: 0,
+    required: true,
   },
   striker: {
     type: String,
@@ -36,6 +37,7 @@ const BallSchema = new Schema({
   over_str: {
     type: Number,
     default: 0,
+    required: true,
   },
   created_at: {
     type: Date,

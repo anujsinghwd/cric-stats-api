@@ -9,7 +9,7 @@ class App {
     require('dotenv').config();
     this.app = express();
     this.database = Database;
-    this.port = process.env.PORT || 5000;
+    this.port = process.env.PORT || 3000;
 
     // Initialize app components
     this.initializeMiddlewares();

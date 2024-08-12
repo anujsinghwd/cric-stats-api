@@ -56,7 +56,7 @@ class BallRoutes {
      * @apiError (404) {String} message Ball not found.
      * @apiError (500) {String} message Failed to update ball.
      */
-    this.router.put("/:ballId", BallController.updateBall.bind(BallController));
+    this.router.put("/:ballId", BallController.updatedBall.bind(BallController));
   }
 }
 

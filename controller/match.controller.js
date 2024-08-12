@@ -7,13 +7,24 @@ class MatchController {
     try {
       const { striker, nonStriker, bowler, over_str } = req.body;
 
+      const newMatch = {};
+
+      if (over_str === 0 || over_str) {
+        newMatch.over_str = over_str;
+      }
+
+      if (striker) {
+        newMatch.striker = striker;
+      }
+      if (nonStriker) {
+        newMatch.nonStriker = nonStriker;
+      }
+      if (bowler) {
+        newMatch.bowler = { key: bowler };
+      }
+
       // Create a new match instance
-      const match = new Match({
-        striker,
-        nonStriker,
-        bowler: { key: bowler },
-        over_str,
-      });
+      const match = new Match(newMatch);
 
       // Save the match to the database
       const savedMatch = await match.save();
