@@ -1,0 +1,20 @@
+{
+  "name": "Cricket API",
+  "version": "1.0.0",
+  "description": "Provides a high-level overview of what the API does, including key features like match management, ball-by-ball tracking, and statistics maintenance.",
+  "title": "Cricket Match Data Tracking API",
+  "url": "http://localhost:3001",
+  "template": {
+    "withCompare": true,
+    "withGenerator": true
+  },
+  "header": {
+    "title": "Overview",
+    "content": "<h1>Cricket Match Data Tracking API</h1>\n<p>This API is designed to track cricket match data with fine-grained detail, enabling accurate ball-by-ball updates. The API handles various aspects of a cricket match, including:</p>\n<ul>\n<li>Creating and managing match details.</li>\n<li>Tracking ball-by-ball events, including runs, no-balls, wide balls, fours, and sixes.</li>\n<li>Maintaining statistics for individual batsmen and bowlers, such as runs scored, balls faced, strike rates, runs conceded, no-balls conceded, and economy rates.</li>\n<li>Updating and reverting match data to ensure consistency and accuracy.</li>\n<li>Providing comprehensive match details through a dedicated endpoint.</li>\n</ul>\n<p>This documentation provides detailed information about each API endpoint, including the required parameters, expected responses, and error handling. The API is built using Express and MongoDB, and follows RESTful principles to ensure a scalable and maintainable architecture.</p>\n<p>Use this documentation to understand how to interact with the API, manage match data, and perform various operations related to cricket match tracking.</p>"
+  },
+  "footer": {
+    "title": "Footer",
+    "content": "<p>Generated with apidoc.</p>"
+  },
+  "order": ["Match", "Ball"]
+}

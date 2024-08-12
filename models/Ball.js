@@ -1,37 +1,42 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const BallSchema = new mongoose.Schema({
+const BallSchema = new Schema({
   matchId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Match",
+    type: Schema.Types.ObjectId,
+    ref: 'Match',
     required: true,
   },
   runs: {
     type: Number,
-    required: true,
-  }, // Runs scored on this ball
+    default: 0,
+  },
   striker: {
     type: String,
     required: true,
-  }, // Striker's name
+  },
   nonStriker: {
     type: String,
     required: true,
-  }, // Non-striker's name
+  },
   bowler: {
     key: {
       type: String,
       required: true,
-    }, // Bowler's name
+    },
   },
   noBall: {
     type: Number,
     default: 0,
-  }, // No-ball flag (1 for yes, 0 for no)
+  },
+  wideBall: {
+    type: Number,
+    default: 0,
+  },
   over_str: {
     type: Number,
-    required: true,
-  }, // Over string (e.g., 3.2)
+    default: 0,
+  },
   created_at: {
     type: Date,
     default: Date.now,
@@ -42,5 +47,4 @@ const BallSchema = new mongoose.Schema({
   },
 });
 
-const Ball = mongoose.model("Ball", BallSchema);
-module.exports = Ball;
+module.exports = mongoose.model('Ball', BallSchema);

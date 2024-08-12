@@ -7,10 +7,19 @@ class BallController {
   async addBall(req, res) {
     const session = await mongoose.startSession();
     session.startTransaction();
-    
+
     try {
-      const { matchId, runs, striker, nonStriker, bowler, noBall, wideBall, over_str } = req.body;
-  
+      const {
+        matchId,
+        runs,
+        striker,
+        nonStriker,
+        bowler,
+        noBall,
+        wideBall,
+        over_str,
+      } = req.body;
+
       // Create and save the ball data
       const ball = new Ball({
         matchId,
@@ -19,41 +28,98 @@ class BallController {
         nonStriker,
         bowler: { key: bowler },
         noBall,
+        wideBall,
         over_str,
       });
-  
+
       const savedBall = await ball.save({ session });
-  
-      // Update the match data
+
+      // Fetch the match document
       const match = await Match.findById(matchId).session(session);
-  
+
       if (!match) {
         await session.abortTransaction();
         session.endSession();
         return ResponseHandler.error(res, "Match not found", null, 404);
       }
-  
+
+      // Update match statistics
       match.totalRuns += runs;
       match.noBall += noBall || 0;
       match.wideBall += wideBall || 0;
-      
-      // Update number of fours and sixes
+
       if (runs === 4) {
         match.fours = (match.fours || 0) + 1;
       } else if (runs === 6) {
         match.sixes = (match.sixes || 0) + 1;
       }
-  
-      // Recalculate current run rate (CRR)
+
+      // Update striker statistics
+      let strikerStats = match.batsmanStats.find((b) => b.batsman === striker);
+      if (!strikerStats) {
+        strikerStats = {
+          batsman: striker,
+          runs: 0,
+          ballsFaced: 0,
+          strikeRate: 0,
+        };
+        match.batsmanStats.push(strikerStats);
+      }
+      strikerStats.runs += runs;
+      strikerStats.ballsFaced += 1;
+      strikerStats.strikeRate =
+        (strikerStats.runs / strikerStats.ballsFaced) * 100;
+
+      // Update non-striker statistics (if applicable)
+      if (!noBall && !wideBall) {
+        let nonStrikerStats = match.batsmanStats.find(
+          (b) => b.batsman === nonStriker
+        );
+        if (!nonStrikerStats) {
+          nonStrikerStats = {
+            batsman: nonStriker,
+            runs: 0,
+            ballsFaced: 0,
+            strikeRate: 0,
+          };
+          match.batsmanStats.push(nonStrikerStats);
+        }
+        nonStrikerStats.ballsFaced += 1;
+        nonStrikerStats.strikeRate =
+          (nonStrikerStats.runs / nonStrikerStats.ballsFaced) * 100;
+      }
+
+      // Update bowler statistics
+      let bowlerStats = match.bowlerStats.find((b) => b.bowler === bowler);
+      if (!bowlerStats) {
+        bowlerStats = {
+          bowler: bowler,
+          runsConceded: 0,
+          deliveries: 0,
+          noBallsConceded: 0,
+          economyRate: 0,
+        };
+        match.bowlerStats.push(bowlerStats);
+      }
+      bowlerStats.runsConceded += runs;
+      bowlerStats.deliveries += 1;
+      bowlerStats.noBallsConceded += noBall || 0;
+      bowlerStats.economyRate = (
+        bowlerStats.runsConceded /
+        (bowlerStats.deliveries / 6)
+      ).toFixed(2);
+
+      // Update match CRR and other details
       match.crr = calculateCRR(match);
       match.over_str = over_str;
       match.updated_at = Date.now();
-  
+
+      // Save the updated match document
       await match.save({ session });
-  
+
       await session.commitTransaction();
       session.endSession();
-  
+
       return ResponseHandler.success(
         res,
         "Ball added successfully",
@@ -63,53 +129,186 @@ class BallController {
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
+      console.error("Error adding ball:", error);
       return ResponseHandler.error(res, "Failed to add ball", error);
     }
   }
 
-  async updateBall(req, res) {
-    try {
-      const { ballId } = req.params;
-      const { runs, striker, nonStriker, bowler, noBall, over_str } = req.body;
+  async updatedBall(req, res) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-      // Find and update the ball data
-      const ball = await Ball.findByIdAndUpdate(
-        ballId,
-        {
-          runs,
-          striker,
-          nonStriker,
-          bowler: { key: bowler },
-          noBall: noBall || 0,
-          over_str,
-          updated_at: Date.now(),
-        },
-        { new: true }
-      );
+    try {
+      const { matchId, ballId } = req.params;
+      const { runs, striker, nonStriker, bowler, noBall, wideBall, over_str } =
+        req.body;
+
+      // Find the ball by ID
+      const ball = await Ball.findById(ballId).session(session);
 
       if (!ball) {
+        await session.abortTransaction();
+        session.endSession();
         return ResponseHandler.error(res, "Ball not found", null, 404);
       }
 
-      // Update the match data accordingly
-      const match = await Match.findById(ball.matchId);
+      // Find the match by ID
+      const match = await Match.findById(matchId).session(session);
 
       if (!match) {
+        await session.abortTransaction();
+        session.endSession();
         return ResponseHandler.error(res, "Match not found", null, 404);
       }
 
-      // Recalculate match stats
-      const originalBall = await Ball.findById(ballId);
-      match.totalRuns = match.totalRuns - originalBall.runs + runs;
-      match.noBall = match.noBall - originalBall.noBall + noBall;
-      match.crr = calculateCRR(match); // Update with the new run rate
+      // Reverse the previous stats before applying the update
+      const previousRuns = ball.runs;
+      const previousNoBall = ball.noBall || 0;
+      const previousWideBall = ball.wideBall || 0;
+      const previousStriker = ball.striker;
+      const previousNonStriker = ball.nonStriker;
+      const previousBowler = ball.bowler.key;
+
+      // Reverse match stats
+      match.totalRuns -= previousRuns;
+      match.noBall -= previousNoBall;
+      match.wideBall -= previousWideBall;
+
+      // Reverse striker stats
+      const previousStrikerStats = match.batsmanStats.find(
+        (b) => b.batsman === previousStriker
+      );
+      if (previousStrikerStats) {
+        previousStrikerStats.runs -= previousRuns;
+        previousStrikerStats.ballsFaced -= 1;
+        previousStrikerStats.strikeRate =
+          (previousStrikerStats.runs / previousStrikerStats.ballsFaced) * 100;
+      }
+
+      // Reverse non-striker stats
+      if (!previousNoBall && !previousWideBall) {
+        const previousNonStrikerStats = match.batsmanStats.find(
+          (b) => b.batsman === previousNonStriker
+        );
+        if (previousNonStrikerStats) {
+          previousNonStrikerStats.ballsFaced -= 1;
+          previousNonStrikerStats.strikeRate =
+            (previousNonStrikerStats.runs /
+              previousNonStrikerStats.ballsFaced) *
+            100;
+        }
+      }
+
+      // Reverse bowler stats
+      const previousBowlerStats = match.bowlerStats.find(
+        (b) => b.bowler === previousBowler
+      );
+      if (previousBowlerStats) {
+        previousBowlerStats.runsConceded -= previousRuns;
+        previousBowlerStats.deliveries -= 1;
+        previousBowlerStats.noBallsConceded -= previousNoBall;
+        previousBowlerStats.economyRate = (
+          previousBowlerStats.runsConceded /
+          (previousBowlerStats.deliveries / 6)
+        ).toFixed(2);
+      }
+
+      // Update the ball details
+      ball.runs = runs;
+      ball.striker = striker;
+      ball.nonStriker = nonStriker;
+      ball.bowler.key = bowler;
+      ball.noBall = noBall;
+      ball.wideBall = wideBall;
+      ball.over_str = over_str;
+
+      const updatedBall = await ball.save({ session });
+
+      // Apply the new stats
+      match.totalRuns += runs;
+      match.noBall += noBall || 0;
+      match.wideBall += wideBall || 0;
+
+      if (runs === 4) {
+        match.fours = (match.fours || 0) + 1;
+      } else if (runs === 6) {
+        match.sixes = (match.sixes || 0) + 1;
+      }
+
+      // Update striker stats
+      let strikerStats = match.batsmanStats.find((b) => b.batsman === striker);
+      if (!strikerStats) {
+        strikerStats = {
+          batsman: striker,
+          runs: 0,
+          ballsFaced: 0,
+          strikeRate: 0,
+        };
+        match.batsmanStats.push(strikerStats);
+      }
+      strikerStats.runs += runs;
+      strikerStats.ballsFaced += 1;
+      strikerStats.strikeRate =
+        (strikerStats.runs / strikerStats.ballsFaced) * 100;
+
+      // Update non-striker stats (if applicable)
+      if (!noBall && !wideBall) {
+        let nonStrikerStats = match.batsmanStats.find(
+          (b) => b.batsman === nonStriker
+        );
+        if (!nonStrikerStats) {
+          nonStrikerStats = {
+            batsman: nonStriker,
+            runs: 0,
+            ballsFaced: 0,
+            strikeRate: 0,
+          };
+          match.batsmanStats.push(nonStrikerStats);
+        }
+        nonStrikerStats.ballsFaced += 1;
+        nonStrikerStats.strikeRate =
+          (nonStrikerStats.runs / nonStrikerStats.ballsFaced) * 100;
+      }
+
+      // Update bowler stats
+      let bowlerStats = match.bowlerStats.find((b) => b.bowler === bowler);
+      if (!bowlerStats) {
+        bowlerStats = {
+          bowler: bowler,
+          runsConceded: 0,
+          deliveries: 0,
+          noBallsConceded: 0,
+          economyRate: 0,
+        };
+        match.bowlerStats.push(bowlerStats);
+      }
+      bowlerStats.runsConceded += runs;
+      bowlerStats.deliveries += 1;
+      bowlerStats.noBallsConceded += noBall || 0;
+      bowlerStats.economyRate = (
+        bowlerStats.runsConceded /
+        (bowlerStats.deliveries / 6)
+      ).toFixed(2);
+
+      // Update match CRR and other details
+      match.crr = calculateCRR(match);
       match.over_str = over_str;
       match.updated_at = Date.now();
 
-      await match.save();
+      await match.save({ session });
 
-      return ResponseHandler.success(res, "Ball updated successfully", ball);
+      await session.commitTransaction();
+      session.endSession();
+
+      return ResponseHandler.success(
+        res,
+        "Ball updated successfully",
+        updatedBall,
+        200
+      );
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       console.error("Error updating ball:", error);
       return ResponseHandler.error(res, "Failed to update ball", error);
     }
@@ -118,7 +317,7 @@ class BallController {
 
 function calculateCRR(match) {
   // Implement the logic to calculate the Current Run Rate (CRR)
-  return match.totalRuns > 0 ? (match.totalRuns / match.over_str) : 0;
+  return match.totalRuns > 0 ? match.totalRuns / match.over_str : 0;
 }
 
 module.exports = new BallController();
