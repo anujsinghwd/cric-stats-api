@@ -66,26 +66,184 @@ You can access the documentation at http://localhost:3000/docs.
 
 ## API Endpoints
 
-### Match Endpoints
+### Create a Match
 
-- **Create a Match**
-   ```bash
-   POST /matches
-   ```
+**HTTP Method:** `POST`  
+**Endpoint:** `/matches`
 
-**Request Body:**
+**Description:**  
+Creates a new match and returns the match details.
+
+**Request:**
+
+- **Request Body:**
+
+  ```json
+  {
+    "striker": "Player Name",
+    "nonStriker": "Player Name",
+    "bowler": "Player Name",
+    "over_str": 0
+  }
+
+**Response:**
+
+- **Success Response:**
    ```json
    {
+      "message": "Match created successfully",
+      "data": {
+         "matchId": "generatedMatchId",
+         "striker": "Player Name",
+         "nonStriker": "Player Name",
+         "bowler": "Player Name",
+         "over_str": 0,
+         "totalRuns": 0,
+         "crr": 0,
+         "noBall": 0,
+         "wideBall": 0,
+         "fours": 0,
+         "sixes": 0,
+         "batsmen": [],
+         "bowlers": [],
+         "teamBallsPlayed": 0,
+         "created_at": "timestamp",
+         "updated_at": "timestamp"
+      }
+   }
+
+- **Error Response:**
+```json
+   {
+      "message": "Error message",
+      "error": "Detailed error information"
+   }
+```
+
+- **Status Codes:**
+	- **201** Created: Resource created successfully.
+	- **400** Bad Request: Invalid request data.
+
+
+### Add a Ball
+
+**HTTP Method:** `POST`  
+**Endpoint:** `/balls`
+
+**Description:**  
+Adds a new ball entry to the match.
+
+**Request:**
+
+- **Request Body:**
+
+  ```json
+   {
+   "matchId": "MatchID",
+   "runs": 4,
+   "striker": "Player Name",
+   "nonStriker": "Player Name",
+   "bowler": "Player Name",
+   "noBall": 0,
+   "over_str": 1
+   }
+
+**Response:**
+
+- **Success Response:**
+   ```json
+   {
+   "message": "Ball added successfully",
+      "data": {
+         "ballId": "generatedBallId",
+         "matchId": "MatchID",
+         "runs": 4,
+         "striker": "Player Name",
+         "nonStriker": "Player Name",
+         "bowler": "Player Name",
+         "noBall": 0,
+         "over_str": 1,
+         "created_at": "timestamp",
+         "updated_at": "timestamp"
+      }
+   }
+
+- **Error Response:**
+```json
+   {
+      "message": "Error message",
+      "error": "Detailed error information"
+   }
+```
+
+- **Status Codes:**
+	- **201** Created: Resource created successfully.
+	- **400** Bad Request: Invalid request data.
+   - **404** Not Found: Match not found.
+
+
+### Update a Ball
+
+**HTTP Method:** `PUT`  
+**Endpoint:** `/balls`
+
+**Description:**  
+Updates an existing ball entry.
+
+**Request:**
+
+- **URL Parameters:**
+	- ballId (string): The ID of the ball to update.
+
+- **Request Body:**
+
+  ```json
+   {
+      "runs": 6,
       "striker": "Player Name",
       "nonStriker": "Player Name",
       "bowler": "Player Name",
-      "over_str": 0
+      "noBall": 0,
+      "over_str": 1
    }
-   ```
 
-### Ball Endpoints
+**Response:**
 
-- **Add a Ball**
-```http
-POST /balls
+- **Success Response:**
+   ```json
+   {
+      "message": "Ball updated successfully",
+      "data": {
+         "ballId": "ballId",
+         "matchId": "MatchID",
+         "runs": 6,
+         "striker": "Player Name",
+         "nonStriker": "Player Name",
+         "bowler": "Player Name",
+         "noBall": 0,
+         "over_str": 1,
+         "created_at": "timestamp",
+         "updated_at": "timestamp"
+      }
+   }
+
+- **Error Response:**
+```json
+   {
+      "message": "Error message",
+      "error": "Detailed error information"
+   }
 ```
+
+- **Status Codes:**
+	- **201** Created: Resource created successfully.
+	- **400** Bad Request: Invalid request data.
+   - **404** Not Found: Match not found.
+
+
+## Validation
+
+Validation is handled using Joi. The following validation rules are applied:
+
+- **Match Validation:** Ensures that required fields are provided and validates the format of the data.
+- **Ball Validation:** Ensures that all required fields are provided and validates the format of the data.
