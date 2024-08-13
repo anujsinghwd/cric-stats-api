@@ -79,36 +79,30 @@ Creates a new match and returns the match details.
 - **Request Body:**
 
   ```json
-  {
-    "striker": "Player Name",
-    "nonStriker": "Player Name",
-    "bowler": "Player Name",
-    "over_str": 0
-  }
+  {}
 
 **Response:**
 
 - **Success Response:**
    ```json
    {
+      "success": true,
       "message": "Match created successfully",
       "data": {
-         "matchId": "generatedMatchId",
-         "striker": "Player Name",
-         "nonStriker": "Player Name",
-         "bowler": "Player Name",
-         "over_str": 0,
          "totalRuns": 0,
          "crr": 0,
          "noBall": 0,
          "wideBall": 0,
          "fours": 0,
          "sixes": 0,
-         "batsmen": [],
-         "bowlers": [],
-         "teamBallsPlayed": 0,
-         "created_at": "timestamp",
-         "updated_at": "timestamp"
+         "totalBallsPlayed": 0,
+         "over_str": 0,
+         "_id": "MATCH_ID",
+         "batsmanStats": [],
+         "bowlerStats": [],
+         "created_at": "2024-08-13T11:09:33.458Z",
+         "updated_at": "2024-08-13T11:09:33.458Z",
+         "__v": 0
       }
    }
 
@@ -139,13 +133,14 @@ Adds a new ball entry to the match.
 
   ```json
    {
-   "matchId": "MatchID",
-   "runs": 4,
-   "striker": "Player Name",
-   "nonStriker": "Player Name",
-   "bowler": "Player Name",
-   "noBall": 0,
-   "over_str": 1
+      "matchId": "MATCH_ID",
+      "runs": 1,
+      "striker": "Rohit",
+      "nonStriker": "Virat",
+      "bowler": "Bumrah",
+      "noBall": 0,
+      "wideBall": 0,
+      "over_str": 1
    }
 
 **Response:**
@@ -153,18 +148,23 @@ Adds a new ball entry to the match.
 - **Success Response:**
    ```json
    {
-   "message": "Ball added successfully",
+      "success": true,
+      "message": "Ball added successfully",
       "data": {
-         "ballId": "generatedBallId",
-         "matchId": "MatchID",
-         "runs": 4,
-         "striker": "Player Name",
-         "nonStriker": "Player Name",
-         "bowler": "Player Name",
+         "matchId": "66bb3eed5e92c747450890fa",
+         "runs": 1,
+         "striker": "Rohit",
+         "nonStriker": "Virat",
+         "bowler": {
+               "key": "Bumrah"
+         },
          "noBall": 0,
+         "wideBall": 0,
          "over_str": 1,
-         "created_at": "timestamp",
-         "updated_at": "timestamp"
+         "_id": "BALL_ID",
+         "created_at": "2024-08-13T11:09:44.585Z",
+         "updated_at": "2024-08-13T11:09:44.585Z",
+         "__v": 0
       }
    }
 
@@ -185,7 +185,7 @@ Adds a new ball entry to the match.
 ### Update a Ball
 
 **HTTP Method:** `PUT`  
-**Endpoint:** `/balls`
+**Endpoint:** `/balls/:ballId`
 
 **Description:**  
 Updates an existing ball entry.

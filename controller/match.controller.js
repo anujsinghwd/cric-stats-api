@@ -1,4 +1,5 @@
 const Match = require("../models/Match");
+const Ball = require("../models/Ball");
 const ResponseHandler = require("../utils/ResponseHandler");
 
 class MatchController {
@@ -48,14 +49,11 @@ class MatchController {
       const { matchId } = req.params;
 
       // Fetch match details
-      const match = await Match.findById(matchId).populate("balls");
+      const match = await Match.findById(matchId);
 
       if (!match) {
         return ResponseHandler.error(res, "Match not found", null, 404);
       }
-
-      // Fetch all balls related to the match
-      const balls = await Ball.find({ matchId }).sort({ created_at: 1 });
 
       // Aggregate ball details for batsman and bowler stats
       const batsmanStats = match.batsmanStats.map((stat) => ({
@@ -91,8 +89,7 @@ class MatchController {
           bowlerStats,
           created_at: match.created_at,
           updated_at: match.updated_at,
-        },
-        balls,
+        }
       };
 
       return ResponseHandler.success(

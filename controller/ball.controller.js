@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Ball = require("../models/Ball");
 const Match = require("../models/Match");
+const utils = require('../utils/utils');
 const ResponseHandler = require("../utils/ResponseHandler");
 
 class BallController {
@@ -176,10 +177,18 @@ class BallController {
       match.noBall -= previousNoBall;
       match.wideBall -= previousWideBall;
 
+      if (previousRuns === 4) {
+        match.fours = (match.fours || 0) - 1;
+      } else if (previousRuns === 6) {
+        match.sixes = (match.sixes || 0) - 1;
+      }
+
+      // console.log('match', match);return;
       // Reverse striker stats
       const previousStrikerStats = match.batsmanStats.find(
         (b) => b.batsman === previousStriker
       );
+      
       if (previousStrikerStats) {
         previousStrikerStats.runs -= previousRuns;
         previousStrikerStats.ballsFaced -= 1;
@@ -239,19 +248,21 @@ class BallController {
 
       // Update striker stats
       let strikerStats = match.batsmanStats.find((b) => b.batsman === striker);
+      
       if (!strikerStats) {
         strikerStats = {
           batsman: striker,
           runs: 0,
-          ballsFaced: 0,
+          ballsFaced: 1,
           strikeRate: 0,
         };
         match.batsmanStats.push(strikerStats);
+      } else {
+        strikerStats.runs += runs;
+        strikerStats.ballsFaced += 1;
+        strikerStats.strikeRate =
+        strikerStats.runs > 0 ? ((strikerStats.runs / strikerStats.ballsFaced) * 100) : 0;
       }
-      strikerStats.runs += runs;
-      strikerStats.ballsFaced += 1;
-      strikerStats.strikeRate =
-        (strikerStats.runs / strikerStats.ballsFaced) * 100;
 
       // Update non-striker stats (if applicable)
       if (!noBall && !wideBall) {
@@ -266,10 +277,11 @@ class BallController {
             strikeRate: 0,
           };
           match.batsmanStats.push(nonStrikerStats);
+        } else {
+          nonStrikerStats.ballsFaced += 1;
+          nonStrikerStats.strikeRate =
+          nonStrikerStats.runs > 0 ? ((nonStrikerStats.runs / nonStrikerStats.ballsFaced) * 100) : 0;
         }
-        nonStrikerStats.ballsFaced += 1;
-        nonStrikerStats.strikeRate =
-          (nonStrikerStats.runs / nonStrikerStats.ballsFaced) * 100;
       }
 
       // Update bowler stats
@@ -283,20 +295,20 @@ class BallController {
           economyRate: 0,
         };
         match.bowlerStats.push(bowlerStats);
+      } else {
+        bowlerStats.runsConceded += runs;
+        bowlerStats.deliveries += 1;
+        bowlerStats.noBallsConceded += noBall || 0;
+        bowlerStats.economyRate = (
+          bowlerStats.runsConceded /
+          (bowlerStats.deliveries / 6)
+        ).toFixed(2);
       }
-      bowlerStats.runsConceded += runs;
-      bowlerStats.deliveries += 1;
-      bowlerStats.noBallsConceded += noBall || 0;
-      bowlerStats.economyRate = (
-        bowlerStats.runsConceded /
-        (bowlerStats.deliveries / 6)
-      ).toFixed(2);
-
+      
       // Update match CRR and other details
       match.crr = calculateCRR(match);
       match.over_str = over_str;
       match.updated_at = Date.now();
-
       await match.save({ session });
 
       await session.commitTransaction();
@@ -315,11 +327,22 @@ class BallController {
       return ResponseHandler.error(res, "Failed to update ball", error);
     }
   }
+
+  async getAllBalls(req, res) {
+    const balls = await Ball.find({}).sort({ created_at: 1 });
+    return ResponseHandler.success(
+      res,
+      "Balls data retrieved successfully",
+      balls,
+      200
+    );
+  }
 }
 
 function calculateCRR(match) {
+  let oversCount = utils.calculateOvers(match.totalBallsPlayed) || 1;
   // Implement the logic to calculate the Current Run Rate (CRR)
-  return match.totalRuns > 0 ? match.totalRuns / match.over_str : 0;
+  return match.totalRuns > 0 ? (match.totalRuns / oversCount) : 0;
 }
 
 module.exports = new BallController();
