@@ -67,6 +67,7 @@ You can access the documentation at http://localhost:3000/docs.
 ## API Endpoints
 
 ### Create a Match
+----------------------------------
 
 **HTTP Method:** `POST`  
 **Endpoint:** `/matches`
@@ -119,15 +120,15 @@ Creates a new match and returns the match details.
 	- **400** Bad Request: Invalid request data.
 
 ### Fetch a Match
-
-**HTTP Method:** `POST`  
+----------------------------------
+**HTTP Method:** `GET`  
 **Endpoint:** `/matches/:matchId`
 
 **Description:**  
 returns the match details.
 
 ### Add a Ball
-
+----------------------------------
 **HTTP Method:** `POST`  
 **Endpoint:** `/balls`
 
@@ -190,6 +191,7 @@ Adds a new ball entry to the match.
 
 
 ### Update a Ball
+----------------------------------
 
 **HTTP Method:** `PUT`  
 **Endpoint:** `/balls`
