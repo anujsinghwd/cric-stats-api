@@ -293,3 +293,6 @@ Validation is handled using Joi. The following validation rules are applied:
 
 - **Match Validation:** Ensures that required fields are provided and validates the format of the data.
 - **Ball Validation:** Ensures that all required fields are provided and validates the format of the data.
+
+## TODO
+- **WideBall** Ensure wideball logic
