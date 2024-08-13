@@ -18,6 +18,29 @@ The Cricket Match Data Tracking API is designed to track cricket match data with
 - **Error Handling:** Robust error handling and data validation using Joi.
 - **Documentation:** API documentation generated using apidoc.
 
+## High-Level System Design: Cricket Match Data Tracking
+
+This system is designed to manage and track cricket match data with a focus on ball-by-ball updates. The flow is divided into two main parts: creating a match and adding/editing ball data based on the match ID.
+
+### System Flow
+
+```mermaid
+graph TD;
+    A[Start] --> B[Create Match];
+    B --> C[Store Match in Database];
+    C --> D{Match Created?};
+    D -->|Yes| E[Get Match ID];
+    E --> F[Add/Edit Ball Data using Match ID];
+    F --> G[Validate Ball Data];
+    G --> H{Validation Passed?};
+    H -->|Yes| I[Update Ball Data in Database];
+    I --> J[Update Match Data with Ball Details];
+    J --> K[Return Success Response];
+    H -->|No| L[Return Validation Error Response];
+    D -->|No| M[Return Match Creation Error];
+  
+
+
 ## Installation
 
 1. **Clone the Repository**
@@ -34,6 +57,9 @@ The Cricket Match Data Tracking API is designed to track cricket match data with
    ```
 
 3. **Create a .env File**
+
+- **NOTE: for testing purpose added the .env file with credentials**
+
   Create a .env file in the root directory of your project to configure environment variables. Example:
    ```bash
    PORT=3000
