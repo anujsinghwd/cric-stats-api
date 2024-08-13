@@ -1,5 +1,26 @@
 # Cricket Match Data Tracking API
 
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Features](#features)
+3. [High-Level System Design](#high-level-system-design-cricket-match-data-tracking)
+   - [System Flow](#system-flow)
+4. [Installation](#installation)
+5. [Configuration](#configuration)
+   - [Example .env File](#example-env-file)
+6. [Scripts](#scripts)
+   - [Start the Application](#start-the-application)
+   - [Generate API Documentation](#generate-api-documentation)
+   - [Serve API Documentation](#serve-api-documentation)
+7. [API Endpoints](#api-endpoints)
+   - [Create a Match](#create-a-match)
+   - [Fetch a Match](#fetch-a-match)
+   - [Add a Ball](#add-a-ball)
+   - [Update a Ball](#update-a-ball)
+8. [Validation](#validation)
+9. [TODO](#todo)
+
 ## Overview
 
 The Cricket Match Data Tracking API is designed to track cricket match data with fine-grained detail. It enables accurate ball-by-ball updates and manages match data, including:
