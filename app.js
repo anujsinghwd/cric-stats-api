@@ -20,6 +20,15 @@ class App {
   // Middleware initialization
   initializeMiddlewares() {
     this.app.use(express.json());
+    this.initializeLogger();
+  }
+
+  initializeLogger() {
+    this.app.use((req,res,next) =>{
+      req.time = new Date(Date.now()).toString();
+      console.log(req.method,req.hostname, req.path, req.time);
+      next();
+    });
   }
 
   // Route initialization
