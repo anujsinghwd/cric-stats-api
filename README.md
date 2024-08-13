@@ -135,6 +135,19 @@ returns the match details.
 **Description:**  
 Adds a new ball entry to the match.
 
+### Ball Data Properties
+
+| Property    | Type     | Description                                                                                   | Example      |
+|-------------|----------|-----------------------------------------------------------------------------------------------|--------------|
+| `matchId`   | `string` | The unique identifier for the match. It should be a valid MongoDB ObjectId.                    | `60b6a5efc25e4b2d4c8b4567` |
+| `runs`      | `number` | The number of runs scored on this ball. It should be a non-negative integer.                   | `1`          |
+| `striker`   | `string` | The name of the batsman who faced the ball. This is a required field.                          | `Rohit`      |
+| `nonStriker`| `string` | The name of the batsman at the non-striker end. This is a required field.                      | `Virat`      |
+| `bowler`    | `string` | The name of the bowler who bowled the ball. This is a required field.                          | `Bumrah`     |
+| `noBall`    | `number` | A flag indicating if the ball was a no-ball. It should be either `0` (no) or `1` (yes).        | `0`          |
+| `wideBall`  | `number` | A flag indicating if the ball was a wide ball. It should be either `0` (no) or `1` (yes).      | `0`          |
+| `over_str`  | `number` | The over number in which the ball was bowled. It should be a positive number.  
+
 **Request:**
 
 - **Request Body:**
