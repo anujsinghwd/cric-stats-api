@@ -10,6 +10,15 @@ The Cricket Match Data Tracking API is designed to track cricket match data with
 - Updating and reverting match data to ensure consistency.
 - Providing comprehensive match details through a dedicated endpoint.
 
+## API Endpoints
+
+Here is a list of available API endpoints:
+
+- [Create a Match](#create-a-match)
+- [Fetch a Match](#fetch-a-match)
+- [Add a Ball](#add-a-ball)
+- [Update a Ball](#update-a-ball)
+
 ## Features
 
 - **Match Management:** Create and Fetch match details.
