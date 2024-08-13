@@ -63,8 +63,19 @@ graph TD;
   Create a .env file in the root directory of your project to configure environment variables. Example:
    ```bash
    PORT=3000
-   MONGO_URI=mongodb://localhost:27017/cricket-api
+   MONGO_URI=mongodb://localhost:27017
+   DB_NAME=cricket-api
    ```
+   ## Configuration
+
+   To set up environment variables for the project, create a `.env` file in the root directory of the project. This file will be used to configure settings such as the port number, database connection, and other environment-specific variables.
+
+   ### Example `.env` File
+
+   ```bash
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017
+   DB_NAME=your_database_name
 
 4. **Setup MongoDB**
   Ensure you have MongoDB running on your local machine or specify the connection string in the .env file.

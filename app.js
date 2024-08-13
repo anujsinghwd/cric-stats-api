@@ -39,7 +39,7 @@ class App {
 
   // Database connection
   async initializeDatabase() {
-    const dbUri = process.env.MONGO_URI;
+    const dbUri = `${process.env.MONGO_URI}/${process.env.DB_NAME}`;
     try {
       await this.database.connect(dbUri);
     } catch (err) {
