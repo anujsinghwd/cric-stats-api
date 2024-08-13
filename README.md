@@ -12,7 +12,7 @@ The Cricket Match Data Tracking API is designed to track cricket match data with
 
 ## Features
 
-- **Match Management:** Create and update match details.
+- **Match Management:** Create and Fetch match details.
 - **Ball Tracking:** Add and update ball-by-ball events.
 - **Statistics Management:** Maintain and update individual batsman and bowler statistics.
 - **Error Handling:** Robust error handling and data validation using Joi.
@@ -118,6 +118,13 @@ Creates a new match and returns the match details.
 	- **201** Created: Resource created successfully.
 	- **400** Bad Request: Invalid request data.
 
+### Fetch a Match
+
+**HTTP Method:** `POST`  
+**Endpoint:** `/matches/:matchId`
+
+**Description:**  
+returns the match details.
 
 ### Add a Ball
 
@@ -185,20 +192,18 @@ Adds a new ball entry to the match.
 ### Update a Ball
 
 **HTTP Method:** `PUT`  
-**Endpoint:** `/balls/:ballId`
+**Endpoint:** `/balls`
 
 **Description:**  
 Updates an existing ball entry.
 
 **Request:**
 
-- **URL Parameters:**
-	- ballId (string): The ID of the ball to update.
-
 - **Request Body:**
 
   ```json
    {
+      "ballId": "BALL_ID",
       "runs": 6,
       "striker": "Player Name",
       "nonStriker": "Player Name",

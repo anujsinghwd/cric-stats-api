@@ -115,7 +115,7 @@ class BallController {
       }
 
       // Update match CRR and other details
-      match.crr = calculateCRR(match);
+      match.crr = calculateCRR(match, over_str);
       match.over_str = over_str;
       match.updated_at = Date.now();
       match.totalBallsPlayed += (!noBall && !wideBall) ? 1 : 0;
@@ -143,8 +143,7 @@ class BallController {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      const { ballId } = req.params;
-      const { runs, striker, nonStriker, bowler, noBall, wideBall, over_str } =
+      const { runs, striker, nonStriker, bowler, noBall, wideBall, over_str, ballId } =
         req.body;
 
       // Find the ball by ID
@@ -306,7 +305,7 @@ class BallController {
       }
       
       // Update match CRR and other details
-      match.crr = calculateCRR(match);
+      match.crr = calculateCRR(match, over_str);
       match.over_str = over_str;
       match.updated_at = Date.now();
       await match.save({ session });
@@ -339,10 +338,9 @@ class BallController {
   }
 }
 
-function calculateCRR(match) {
-  let oversCount = utils.calculateOvers(match.totalBallsPlayed) || 1;
+function calculateCRR(match, over) {
   // Implement the logic to calculate the Current Run Rate (CRR)
-  return match.totalRuns > 0 ? (match.totalRuns / oversCount) : 0;
+  return match.totalRuns > 0 ? (match.totalRuns / over) : 0;
 }
 
 module.exports = new BallController();

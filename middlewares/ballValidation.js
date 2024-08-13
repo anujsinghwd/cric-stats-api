@@ -1,50 +1,85 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 class BallValidator {
   constructor() {
     this.addBallSchema = Joi.object({
-      matchId: Joi.string().required().messages({
-        'string.empty': 'Match ID is required.',
-        'any.required': 'Match ID is required.'
-      }),
+      matchId: Joi.string()
+        .pattern(/^[0-9a-fA-F]{24}$/)
+        .required()
+        .messages({
+          "string.pattern.base":
+            "Invalid match ID format. Must be a valid ObjectId.",
+        }), // Ensure matchId is a valid ObjectId
       runs: Joi.number().integer().min(0).required().messages({
-        'number.base': 'Runs must be a number.',
-        'number.integer': 'Runs must be an integer.',
-        'number.min': 'Runs cannot be negative.',
-        'any.required': 'Runs are required.'
+        "number.base": "Runs must be a number.",
+        "number.min": "Runs must be a positive number.",
       }),
       striker: Joi.string().required().messages({
-        'string.empty': 'Striker is required.',
-        'any.required': 'Striker is required.'
+        "string.base": "Striker's name must be a string.",
+        "string.empty": "Striker's name is required.",
       }),
       nonStriker: Joi.string().required().messages({
-        'string.empty': 'Non-striker is required.',
-        'any.required': 'Non-striker is required.'
+        "string.base": "Non-striker's name must be a string.",
+        "string.empty": "Non-striker's name is required.",
       }),
       bowler: Joi.string().required().messages({
-        'string.empty': 'Bowler is required.',
-        'any.required': 'Bowler is required.'
+        "string.base": "Bowler's name must be a string.",
+        "string.empty": "Bowler's name is required.",
       }),
       noBall: Joi.number().integer().min(0).max(1).default(0).messages({
-        'number.base': 'NoBall must be a number.',
-        'number.integer': 'NoBall must be an integer.',
-        'number.min': 'NoBall cannot be negative.',
-        'number.max': 'NoBall must be 0 or 1.'
+        "number.base": "No-ball flag must be a number.",
+        "number.min": "No-ball flag must be either 0 or 1.",
+        "number.max": "No-ball flag must be either 0 or 1.",
       }),
-      over_str: Joi.number().integer().min(0).messages({
-        'number.base': 'Over_str must be a number.',
-        'number.integer': 'Over_str must be an integer.',
-        'number.min': 'Over_str cannot be negative.'
-      })
+      wideBall: Joi.number().integer().min(0).max(1).default(0).messages({
+        "number.base": "Wide-ball flag must be a number.",
+        "number.min": "Wide-ball flag must be either 0 or 1.",
+        "number.max": "Wide-ball flag must be either 0 or 1.",
+      }),
+      over_str: Joi.number().integer().min(1).required().messages({
+        "number.base": "Over string must be a number.",
+        "any.required": "Over string is required.",
+      }),
     });
 
     this.updateBallSchema = Joi.object({
-      runs: Joi.number().integer().min(0),
-      striker: Joi.string(),
-      nonStriker: Joi.string(),
-      bowler: Joi.string(),
-      noBall: Joi.number().integer().min(0).max(1),
-      over_str: Joi.number().integer().min(0)
+      ballId: Joi.string()
+        .pattern(/^[0-9a-fA-F]{24}$/)
+        .required()
+        .messages({
+          "string.pattern.base":
+            "Invalid match ID format. Must be a valid ObjectId.",
+        }), // Ensure matchId is a valid ObjectId
+      runs: Joi.number().integer().min(0).required().messages({
+        "number.base": "Runs must be a number.",
+        "number.min": "Runs must be a positive number.",
+      }),
+      striker: Joi.string().required().messages({
+        "string.base": "Striker's name must be a string.",
+        "string.empty": "Striker's name is required.",
+      }),
+      nonStriker: Joi.string().required().messages({
+        "string.base": "Non-striker's name must be a string.",
+        "string.empty": "Non-striker's name is required.",
+      }),
+      bowler: Joi.string().required().messages({
+        "string.base": "Bowler's name must be a string.",
+        "string.empty": "Bowler's name is required.",
+      }),
+      noBall: Joi.number().integer().min(0).max(1).default(0).messages({
+        "number.base": "No-ball flag must be a number.",
+        "number.min": "No-ball flag must be either 0 or 1.",
+        "number.max": "No-ball flag must be either 0 or 1.",
+      }),
+      wideBall: Joi.number().integer().min(0).max(1).default(0).messages({
+        "number.base": "Wide-ball flag must be a number.",
+        "number.min": "Wide-ball flag must be either 0 or 1.",
+        "number.max": "Wide-ball flag must be either 0 or 1.",
+      }),
+      over_str: Joi.number().integer().min(1).required().messages({
+        "number.base": "Over string must be a number.",
+        "any.required": "Over string is required.",
+      }),
     });
   }
 
@@ -53,8 +88,8 @@ class BallValidator {
 
     if (error) {
       return res.status(400).json({
-        message: 'Validation failed',
-        errors: error.details.map((detail) => detail.message)
+        message: "Validation failed",
+        errors: error.details.map((detail) => detail.message),
       });
     }
 
@@ -66,8 +101,8 @@ class BallValidator {
 
     if (error) {
       return res.status(400).json({
-        message: 'Validation failed',
-        errors: error.details.map((detail) => detail.message)
+        message: "Validation failed",
+        errors: error.details.map((detail) => detail.message),
       });
     }
 

@@ -3,30 +3,17 @@ const Joi = require('joi');
 class MatchValidator {
   constructor() {
     this.createMatchSchema = Joi.object({
-      striker: Joi.string().required().messages({
-        'string.empty': 'Striker is required.',
-        'any.required': 'Striker is required.'
-      }),
-      nonStriker: Joi.string().required().messages({
-        'string.empty': 'Non-striker is required.',
-        'any.required': 'Non-striker is required.'
-      }),
-      bowler: Joi.string().required().messages({
-        'string.empty': 'Bowler is required.',
-        'any.required': 'Bowler is required.'
-      }),
-      over_str: Joi.number().integer().min(0).default(0).messages({
-        'number.base': 'Starting over must be a number.',
-        'number.integer': 'Starting over must be an integer.',
-        'number.min': 'Starting over cannot be negative.'
-      })
+      striker: Joi.string(),
+      nonStriker: Joi.string(),
+      bowler: Joi.string(),
+      over_str: Joi.number().integer().min(1)
     });
 
     this.updateMatchSchema = Joi.object({
       striker: Joi.string(),
       nonStriker: Joi.string(),
       bowler: Joi.string(),
-      over_str: Joi.number().integer().min(0)
+      over_str: Joi.number().integer().min(1)
     });
   }
 

@@ -33,15 +33,19 @@ class BallRoutes {
      * @apiError (404) {String} message Match not found.
      * @apiError (500) {String} message Failed to add ball.
      */
-    this.router.post("/", BallController.addBall.bind(BallController));
+    this.router.post(
+      "/",
+      BallValidator.validateAdd.bind(BallValidator),
+      BallController.addBall.bind(BallController)
+    );
 
     /**
-     * @api {put} /balls/:ballId Update a ball in the match
+     * @api {put} /balls Update a ball in the match
      * @apiName UpdateBall
      * @apiGroup Ball
      *
-     * @apiParam {String} ballId ID of the ball to update.
      *
+     * @apiBody {String} ballId ID of the ball to update.
      * @apiBody {Number} runs Number of runs scored.
      * @apiBody {String} striker Name of the striker.
      * @apiBody {String} nonStriker Name of the non-striker.
@@ -56,9 +60,13 @@ class BallRoutes {
      * @apiError (404) {String} message Ball not found.
      * @apiError (500) {String} message Failed to update ball.
      */
-    this.router.put("/:ballId", BallController.updatedBall.bind(BallController));
+    this.router.put(
+      "/",
+      BallValidator.validateUpdate.bind(BallValidator),
+      BallController.updatedBall.bind(BallController)
+    );
 
-    this.router.get("/", BallController.getAllBalls.bind(BallController));
+    // this.router.get("/", BallController.getAllBalls.bind(BallController));
   }
 }
 

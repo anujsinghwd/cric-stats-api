@@ -31,10 +31,24 @@ class MatchRoutes {
      * @apiError (400) {String} message Validation failed.
      * @apiError (500) {String} message Failed to create match.
      */
-    this.router.post("/", MatchController.createMatch.bind(MatchController));
+    this.router.post(
+      "/",
+      MatchValidation.validateCreate.bind(MatchValidation),
+      MatchController.createMatch.bind(MatchController)
+    );
 
+    /**
+     * @api {get} /matches get match stats
+     * @apiName Get a Match
+     * @apiGroup Match
+     * 
+     * 
+     * @apiParam {String} matchId Match ID
+     * 
+    */
     this.router.get(
       "/:matchId",
+      MatchValidation.validateUpdate.bind(MatchValidation),
       MatchController.getMatchDetails.bind(MatchController)
     );
   }
