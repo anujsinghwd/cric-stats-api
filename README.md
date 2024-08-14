@@ -89,7 +89,8 @@ graph TD;
 3. **Create a .env File**
 
    **Note: For testing the app, I’ve added the MongoDB URI with credentials. You can test the app directly without needing to make any changes.**
-  Create a .env file in the root directory of your project to configure environment variables. Example:
+
+  update .env file in the root directory of your project to configure environment variables. Example:
    ```bash
    PORT=3000
    MONGO_URI=mongodb://localhost:27017
@@ -97,13 +98,13 @@ graph TD;
    ```
    ## Configuration
 
-   To set up environment variables for the project, create a `.env` file in the root directory of the project. This file will be used to configure settings such as the port number, database connection, and other environment-specific variables.
+   To set up environment variables for the project, uodate `.env` file in the root directory of the project. This file will be used to configure settings such as the port number, database connection, and other environment-specific variables.
 
    ### Example `.env` File
 
    ```bash
-   PORT=3000
-   MONGO_URI=mongodb://localhost:27017
+   PORT=PORT_TO_RUN_APP
+   MONGO_URI=MONGO_URI
    DB_NAME=YOUR_DB_NAME
    ```
 
