@@ -111,7 +111,8 @@ graph TD;
 
 4. **Setup MongoDB**
   Ensure you have MongoDB running on your local machine or specify the connection string in the .env file.
-  **NOTE::look into [Important Notes](#important-notes)**
+
+  - **NOTE:: look into [Important Notes](#important-notes)**
 
 ## Scripts
 
