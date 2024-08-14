@@ -103,7 +103,8 @@ graph TD;
    ```bash
    PORT=3000
    MONGO_URI=mongodb://localhost:27017
-   DB_NAME=your_database_name
+   DB_NAME=YOUR_DB_NAME
+   ```
 
 4. **Setup MongoDB**
   Ensure you have MongoDB running on your local machine or specify the connection string in the .env file.
