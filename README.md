@@ -110,6 +110,12 @@ graph TD;
 
 ## Scripts
 
+- **Start the Application in Dev**
+To start the application, use:
+   ```bash
+   npm run dev
+   ```
+
 - **Start the Application**
 To start the application, use:
    ```bash
@@ -123,7 +129,7 @@ To generate API documentation using apidoc, use:
 This will create the documentation in the apidoc/ directory.
 
 - **Serve API Documentation**
-To serve the generated API documentation with the Express app, make sure to include the following line in your app.js or server.js:
+To serve the generated API documentation with the Express app, make sure to include the following line in your app.js:
    ```bash
    app.use('/docs', express.static(path.join(__dirname, 'apidoc')));
    ```
