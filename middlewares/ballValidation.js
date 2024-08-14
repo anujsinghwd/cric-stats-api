@@ -10,9 +10,10 @@ class BallValidator {
           "string.pattern.base":
             "Invalid match ID format. Must be a valid ObjectId.",
         }), // Ensure matchId is a valid ObjectId
-      runs: Joi.number().integer().min(0).required().messages({
+      runs: Joi.number().integer().min(0).max(6).required().messages({
         "number.base": "Runs must be a number.",
         "number.min": "Runs must be a positive number.",
+        "number.max": "Runs must be between 0 or 6.",
       }),
       striker: Joi.string().required().messages({
         "string.base": "Striker's name must be a string.",
@@ -50,9 +51,10 @@ class BallValidator {
           "string.pattern.base":
             "Invalid match ID format. Must be a valid ObjectId.",
         }), // Ensure matchId is a valid ObjectId
-      runs: Joi.number().integer().min(0).required().messages({
+      runs: Joi.number().integer().min(0).max(6).required().messages({
         "number.base": "Runs must be a number.",
         "number.min": "Runs must be a positive number.",
+        "number.max": "Runs must be between 0 or 6.",
       }),
       striker: Joi.string().required().messages({
         "string.base": "Striker's name must be a string.",
