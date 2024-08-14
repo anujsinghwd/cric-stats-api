@@ -88,6 +88,7 @@ graph TD;
 
 3. **Create a .env File**
 
+   **Note: For testing the app, I’ve added the MongoDB URI with credentials. You can test the app directly without needing to make any changes.**
   Create a .env file in the root directory of your project to configure environment variables. Example:
    ```bash
    PORT=3000
