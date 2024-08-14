@@ -19,7 +19,8 @@
    - [Add a Ball](#add-a-ball)
    - [Update a Ball](#update-a-ball)
 8. [Validation](#validation)
-9. [TODO](#todo)
+9. [Important Notes](#important-notes)
+10. [TODO](#todo)
 
 ## Overview
 
@@ -110,6 +111,7 @@ graph TD;
 
 4. **Setup MongoDB**
   Ensure you have MongoDB running on your local machine or specify the connection string in the .env file.
+  **NOTE::look into [Important Notes](#important-notes)**
 
 ## Scripts
 
@@ -341,6 +343,17 @@ Validation is handled using Joi. The following validation rules are applied:
 
 - **Match Validation:** Ensures that required fields are provided and validates the format of the data.
 - **Ball Validation:** Ensures that all required fields are provided and validates the format of the data.
+
+# Important Notes
+
+This API leverages MongoDB transactions to ensure data consistency, especially during complex operations like ball-by-ball updates and match data management. 
+
+**Important:**
+
+- Make sure that MongoDB is running as a replica set or using MongoDB Atlas, as transactions are supported only in these configurations.
+- Properly configure your MongoDB environment to support transactions.
+
+Failure to do so may lead to unexpected behavior or data inconsistencies.
 
 ## TODO
 - **WideBall** Ensure wideball logic
